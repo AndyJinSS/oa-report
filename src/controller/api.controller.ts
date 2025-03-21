@@ -1,6 +1,7 @@
-import { Inject, Controller, Get, Query } from '@midwayjs/core';
+import { Inject, Controller, Get, Query, Post, Body } from "@midwayjs/core";
 import { Context } from '@midwayjs/koa';
-import { UserService } from '../service/user.service';
+import { TemplateService } from "../service/template.service";
+import { ReportService } from "../service/report.service";
 
 @Controller('/api')
 export class APIController {
@@ -8,11 +9,44 @@ export class APIController {
   ctx: Context;
 
   @Inject()
-  userService: UserService;
+  templateService: TemplateService;
 
-  @Get('/get_user')
-  async getUser(@Query('uid') uid) {
-    const user = await this.userService.getUser({ uid });
-    return { success: true, message: 'OK', data: user };
+  @Inject()
+  reportService: ReportService;
+
+  @Get('/template/list')
+  async getTemplateList() {
+    return this.templateService.list(1);
+  }
+
+  @Get('/template/get')
+  async getTemplate(@Query('id') id: number) {
+    return this.templateService.get(id);
+  }
+
+  @Post('/template/crate')
+  async createTemplate(@Body() data: any ) {
+    return this.templateService.create({
+      name: data.name,
+      description: data.description,
+      userId: 1
+    });
+  }
+
+  @Get('/report/list')
+  async getReportList() {
+    return this.reportService.list(1);
+  }
+  @Get('/report/get')
+  async getReport(@Query('id') id: number) {
+    return this.reportService.get(id);
+  }
+
+  @Post('/report/crate')
+  async createReport(@Body() data: any ) {
+    return this.reportService.create({
+      name: data.name,
+      userId: 1
+    });
   }
 }
